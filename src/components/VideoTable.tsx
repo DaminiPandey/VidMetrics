@@ -257,7 +257,7 @@ export default function VideoTable({ videos }: { videos: VideoInfo[] }) {
                           {video.title}
                         </p>
                         {isTrending && (
-                          <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-yt-red-dim px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#ff6b6b]">
+                          <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-accent-dim px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-accent">
                             <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
                               <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" strokeLinecap="round" strokeLinejoin="round" />
                               <polyline points="16 7 22 7 22 13" strokeLinecap="round" strokeLinejoin="round" />
@@ -281,10 +281,10 @@ export default function VideoTable({ videos }: { videos: VideoInfo[] }) {
                     <span
                       className={`inline-block rounded-full px-2.5 py-0.5 font-mono text-sm font-medium ${
                         eng >= 5
-                          ? "bg-success-dim text-success"
+                          ? "bg-emerald-500/15 text-emerald-400"
                           : eng >= 2
-                            ? "bg-warning-dim text-warning"
-                            : "bg-danger-dim text-danger"
+                            ? "bg-amber-500/15 text-amber-400"
+                            : "bg-rose-500/15 text-rose-400"
                       }`}
                     >
                       {eng.toFixed(2)}%

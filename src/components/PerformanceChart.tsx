@@ -1,10 +1,9 @@
 "use client";
 
+import { useState, useMemo } from "react";
 import {
   BarChart,
   Bar,
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   Tooltip,
@@ -17,30 +16,71 @@ import { BarChart3, TrendingUp } from "lucide-react";
 import { formatNumber, engagementRate } from "@/lib/utils";
 import type { VideoInfo } from "@/lib/youtube";
 
-export default function PerformanceChart({ videos }: { videos: VideoInfo[] }) {
-  // Top 10 by views for bar chart
-  const topByViews = [...videos]
-    .sort((a, b) => b.viewCount - a.viewCount)
-    .slice(0, 10)
-    .map((v) => ({
-      name: v.title.length > 25 ? v.title.slice(0, 25) + "..." : v.title,
-      fullTitle: v.title,
-      views: v.viewCount,
-    }));
+type ChartDateFilter = "7d" | "14d" | "30d" | "all";
 
-  // Chronological data for engagement trend
-  const chronological = [...videos]
-    .sort((a, b) => new Date(a.publishedAt).getTime() - new Date(b.publishedAt).getTime())
-    .map((v) => ({
-      date: new Date(v.publishedAt).toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-      }),
-      views: v.viewCount,
-      engagement: parseFloat(
-        engagementRate(v.viewCount, v.likeCount, v.commentCount).toFixed(2)
-      ),
-    }));
+const CHART_DATE_FILTERS: { value: ChartDateFilter; label: string }[] = [
+  { value: "7d", label: "7D" },
+  { value: "14d", label: "14D" },
+  { value: "30d", label: "30D" },
+  { value: "all", label: "All" },
+];
+
+type TopCount = 5 | 10 | 20;
+
+const TOP_COUNTS: { value: TopCount; label: string }[] = [
+  { value: 5, label: "Top 5" },
+  { value: 10, label: "Top 10" },
+  { value: 20, label: "Top 20" },
+];
+
+export default function PerformanceChart({ videos }: { videos: VideoInfo[] }) {
+  const [engDateFilter, setEngDateFilter] = useState<ChartDateFilter>("all");
+  const [topCount, setTopCount] = useState<TopCount>(10);
+
+  const topByViews = useMemo(() => {
+    return [...videos]
+      .sort((a, b) => b.viewCount - a.viewCount)
+      .slice(0, topCount)
+      .map((v) => ({
+        name: v.title.length > 25 ? v.title.slice(0, 25) + "..." : v.title,
+        fullTitle: v.title,
+        views: v.viewCount,
+      }));
+  }, [videos, topCount]);
+
+  // Chronological data for engagement trend (filtered)
+  const chronological = useMemo(() => {
+    let filtered = [...videos];
+
+    if (engDateFilter !== "all") {
+      const now = Date.now();
+      const cutoffs: Record<string, number> = {
+        "7d": 7 * 86400000,
+        "14d": 14 * 86400000,
+        "30d": 30 * 86400000,
+      };
+      const cutoff = now - cutoffs[engDateFilter];
+      filtered = filtered.filter(
+        (v) => new Date(v.publishedAt).getTime() >= cutoff
+      );
+    }
+
+    return filtered
+      .sort(
+        (a, b) =>
+          new Date(a.publishedAt).getTime() - new Date(b.publishedAt).getTime()
+      )
+      .map((v) => ({
+        date: new Date(v.publishedAt).toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+        }),
+        views: v.viewCount,
+        engagement: parseFloat(
+          engagementRate(v.viewCount, v.likeCount, v.commentCount).toFixed(2)
+        ),
+      }));
+  }, [videos, engDateFilter]);
 
   const tooltipStyle = {
     backgroundColor: "#1a1a2e",
@@ -53,10 +93,27 @@ export default function PerformanceChart({ videos }: { videos: VideoInfo[] }) {
     <div className="grid gap-6 lg:grid-cols-2">
       {/* Top Videos Bar Chart */}
       <div className="rounded-xl border border-border bg-bg-surface p-6">
-        <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-text-primary">
-          <BarChart3 className="h-5 w-5 text-accent" />
-          Top Videos by Views
-        </h3>
+        <div className="mb-4 flex items-center justify-between">
+          <h3 className="flex items-center gap-2 text-lg font-semibold text-text-primary">
+            <BarChart3 className="h-5 w-5 text-accent" />
+            Top Videos by Views
+          </h3>
+          <div className="flex gap-1.5">
+            {TOP_COUNTS.map((t) => (
+              <button
+                key={t.value}
+                onClick={() => setTopCount(t.value)}
+                className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                  topCount === t.value
+                    ? "bg-accent text-text-inverse"
+                    : "border border-border text-text-muted hover:border-border-hover hover:text-text-primary"
+                }`}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+        </div>
         <div className="h-72">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={topByViews} layout="vertical" margin={{ left: 10, right: 20 }}>
@@ -92,57 +149,80 @@ export default function PerformanceChart({ videos }: { videos: VideoInfo[] }) {
 
       {/* Engagement Trend Line Chart */}
       <div className="rounded-xl border border-border bg-bg-surface p-6">
-        <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-text-primary">
-          <TrendingUp className="h-5 w-5 text-accent" />
-          Engagement Over Time
-        </h3>
+        <div className="mb-4 flex items-center justify-between">
+          <h3 className="flex items-center gap-2 text-lg font-semibold text-text-primary">
+            <TrendingUp className="h-5 w-5 text-accent" />
+            Engagement Over Time
+          </h3>
+          <div className="flex gap-1.5">
+            {CHART_DATE_FILTERS.map((f) => (
+              <button
+                key={f.value}
+                onClick={() => setEngDateFilter(f.value)}
+                className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                  engDateFilter === f.value
+                    ? "bg-accent text-text-inverse"
+                    : "border border-border text-text-muted hover:border-border-hover hover:text-text-primary"
+                }`}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+        </div>
         <div className="h-72">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={chronological} margin={{ left: 0, right: 20, top: 10, bottom: 0 }}>
-              <defs>
-                <linearGradient id="engGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#2dd4bf" stopOpacity={0.3} />
-                  <stop offset="50%" stopColor="#2dd4bf" stopOpacity={0.1} />
-                  <stop offset="100%" stopColor="#2dd4bf" stopOpacity={0} />
-                </linearGradient>
-                <filter id="glow">
-                  <feGaussianBlur stdDeviation="3" result="coloredBlur" />
-                  <feMerge>
-                    <feMergeNode in="coloredBlur" />
-                    <feMergeNode in="SourceGraphic" />
-                  </feMerge>
-                </filter>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#2a2a4a" />
-              <XAxis
-                dataKey="date"
-                stroke="#6b7280"
-                fontSize={11}
-                tick={{ fill: "#a1a1aa" }}
-              />
-              <YAxis
-                stroke="#6b7280"
-                fontSize={11}
-                tickFormatter={(v) => `${v}%`}
-              />
-              <Tooltip
-                contentStyle={tooltipStyle}
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                formatter={(value: any) => [`${Number(value).toFixed(2)}%`, "Engagement"]}
-                labelStyle={{ color: "#e5e7eb" }}
-              />
-              <Area
-                type="monotone"
-                dataKey="engagement"
-                stroke="#2dd4bf"
-                strokeWidth={2.5}
-                fill="url(#engGradient)"
-                filter="url(#glow)"
-                dot={{ r: 4, fill: "#1a1a2e", stroke: "#2dd4bf", strokeWidth: 2 }}
-                activeDot={{ r: 6, fill: "#2dd4bf", stroke: "#1a1a2e", strokeWidth: 2 }}
-              />
-            </AreaChart>
-          </ResponsiveContainer>
+          {chronological.length > 0 ? (
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={chronological} margin={{ left: 0, right: 20, top: 10, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="engGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#2dd4bf" stopOpacity={0.3} />
+                    <stop offset="50%" stopColor="#2dd4bf" stopOpacity={0.1} />
+                    <stop offset="100%" stopColor="#2dd4bf" stopOpacity={0} />
+                  </linearGradient>
+                  <filter id="glow">
+                    <feGaussianBlur stdDeviation="3" result="coloredBlur" />
+                    <feMerge>
+                      <feMergeNode in="coloredBlur" />
+                      <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                  </filter>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#2a2a4a" />
+                <XAxis
+                  dataKey="date"
+                  stroke="#6b7280"
+                  fontSize={11}
+                  tick={{ fill: "#a1a1aa" }}
+                />
+                <YAxis
+                  stroke="#6b7280"
+                  fontSize={11}
+                  tickFormatter={(v) => `${v}%`}
+                />
+                <Tooltip
+                  contentStyle={tooltipStyle}
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  formatter={(value: any) => [`${Number(value).toFixed(2)}%`, "Engagement"]}
+                  labelStyle={{ color: "#e5e7eb" }}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="engagement"
+                  stroke="#2dd4bf"
+                  strokeWidth={2.5}
+                  fill="url(#engGradient)"
+                  filter="url(#glow)"
+                  dot={{ r: 4, fill: "#1a1a2e", stroke: "#2dd4bf", strokeWidth: 2 }}
+                  activeDot={{ r: 6, fill: "#2dd4bf", stroke: "#1a1a2e", strokeWidth: 2 }}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="flex h-full items-center justify-center text-text-muted">
+              No videos found in this time range.
+            </div>
+          )}
         </div>
       </div>
     </div>
