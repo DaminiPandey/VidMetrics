@@ -2,7 +2,7 @@
 
 Paste a YouTube channel URL and instantly see which videos are crushing it. Built for the VidMetrics Vibe Coder Product Developer challenge.
 
-**Live Demo:** [vidmetrics.vercel.app](https://vidmetrics.vercel.app)
+**Live Demo:** [vidmetrics-ten.vercel.app](https://vidmetrics-ten.vercel.app)
 
 ---
 

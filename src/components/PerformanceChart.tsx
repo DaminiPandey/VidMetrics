@@ -34,7 +34,7 @@ const TOP_COUNTS: { value: TopCount; label: string }[] = [
   { value: 20, label: "Top 20" },
 ];
 
-export default function PerformanceChart({ videos }: { videos: VideoInfo[] }) {
+export default function PerformanceChart({ videos, channelName }: { videos: VideoInfo[]; channelName?: string }) {
   const [engDateFilter, setEngDateFilter] = useState<ChartDateFilter>("all");
   const [topCount, setTopCount] = useState<TopCount>(10);
   const [logScale, setLogScale] = useState(false);
@@ -92,8 +92,72 @@ export default function PerformanceChart({ videos }: { videos: VideoInfo[] }) {
     fontSize: "13px",
   };
 
+  // Mobile: top ranked list
+  const topRanked = [...videos]
+    .sort((a, b) => b.viewCount - a.viewCount)
+    .slice(0, 10);
+
+  const avgEng = videos.length > 0
+    ? videos.reduce((sum, v) => sum + engagementRate(v.viewCount, v.likeCount, v.commentCount), 0) / videos.length
+    : 0;
+  const avgViews = videos.length > 0
+    ? videos.reduce((sum, v) => sum + v.viewCount, 0) / videos.length
+    : 0;
+  const totalLikes = videos.reduce((sum, v) => sum + v.likeCount, 0);
+
   return (
-    <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
+    <>
+    {/* Mobile: Stats + Ranked List */}
+    <div className="md:hidden space-y-4">
+      {channelName && (
+        <p className="text-sm text-text-muted">Insights for <span className="font-semibold text-text-primary">{channelName}</span></p>
+      )}
+      {/* Quick Stats */}
+      <div className="grid grid-cols-3 gap-3">
+        <div className="rounded-xl border border-border bg-bg-surface p-3 text-center">
+          <p className="font-mono text-lg font-bold text-text-primary">{formatNumber(Math.round(avgViews))}</p>
+          <p className="text-[10px] text-text-muted">Avg Views</p>
+        </div>
+        <div className="rounded-xl border border-border bg-bg-surface p-3 text-center">
+          <p className="font-mono text-lg font-bold text-text-primary">{avgEng.toFixed(1)}%</p>
+          <p className="text-[10px] text-text-muted">Avg Engagement</p>
+        </div>
+        <div className="rounded-xl border border-border bg-bg-surface p-3 text-center">
+          <p className="font-mono text-lg font-bold text-text-primary">{formatNumber(totalLikes)}</p>
+          <p className="text-[10px] text-text-muted">Total Likes</p>
+        </div>
+      </div>
+
+      {/* Ranked List */}
+      <div className="rounded-xl border border-border bg-bg-surface p-4 overflow-hidden">
+        <h3 className="mb-3 flex items-center gap-2 text-base font-semibold text-text-primary">
+          <BarChart3 className="h-5 w-5 text-accent" />
+          Top Videos by Views
+        </h3>
+        <div className="space-y-2">
+          {topRanked.map((v, i) => (
+            <a
+              key={v.id}
+              href={`https://youtube.com/watch?v=${v.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="grid grid-cols-[24px_1fr_auto] items-center gap-3 rounded-lg p-2 transition-colors hover:bg-bg-surface-hover"
+            >
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-accent/10 text-xs font-bold text-accent">
+                {i + 1}
+              </span>
+              <span className="text-sm text-text-primary truncate">{v.title}</span>
+              <span className="font-mono text-sm font-semibold text-text-secondary">
+                {formatNumber(v.viewCount)}
+              </span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    {/* Desktop: Charts */}
+    <div className="hidden md:grid gap-4 sm:gap-6 lg:grid-cols-2">
       {/* Top Videos Bar Chart */}
       <div className="rounded-xl border border-border bg-bg-surface p-4 sm:p-6">
         <div className="mb-3 sm:mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
@@ -243,5 +307,6 @@ export default function PerformanceChart({ videos }: { videos: VideoInfo[] }) {
         </div>
       </div>
     </div>
+    </>
   );
 }

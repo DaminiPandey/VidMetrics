@@ -246,7 +246,7 @@ export default function CompareChannels({
               <button
                 onClick={addChannel}
                 disabled={loading}
-                className="shrink-0 rounded-lg bg-accent px-3 py-2 text-sm font-medium text-text-inverse transition-colors hover:bg-accent-hover disabled:opacity-50"
+                className="shrink-0 rounded-lg bg-accent px-3 py-2 text-sm font-medium text-text-inverse transition-colors hover:bg-accent-hover disabled:opacity-50 flex items-center justify-center"
               >
                 {loading ? (
                   <span className="flex items-center gap-1">
@@ -270,12 +270,12 @@ export default function CompareChannels({
       {channels.length >= 2 && (
         <div className="grid gap-6 lg:grid-cols-2">
           {/* Grouped Bar Chart */}
-          <div className="rounded-xl border border-border bg-bg-surface p-6">
+          <div className="rounded-xl border border-border bg-bg-surface p-4 sm:p-6 overflow-x-auto">
             <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-text-primary">
               <Eye className="h-5 w-5 text-accent" />
               Views & Likes Comparison
             </h3>
-            <div className="h-72">
+            <div className="h-72 min-w-[400px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={chartData} margin={{ left: 10, right: 20 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#2a2a4a" />
@@ -303,13 +303,13 @@ export default function CompareChannels({
           </div>
 
           {/* Side-by-side Metrics Table */}
-          <div className="rounded-xl border border-border bg-bg-surface p-6">
+          <div className="rounded-xl border border-border bg-bg-surface p-4 sm:p-6 overflow-x-auto">
             <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-text-primary">
               <TrendingUp className="h-5 w-5 text-accent" />
               Head-to-Head
             </h3>
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full text-sm min-w-[400px]">
                 <thead>
                   <tr className="border-b border-border text-left">
                     <th className="pb-3 pr-4 text-xs font-medium uppercase tracking-wider text-text-muted">

@@ -42,7 +42,8 @@
   --color-danger-dim: rgba(239, 68, 68, 0.08);
 }
 
-html {
+html,
+body {
   overflow-x: hidden;
 }
 

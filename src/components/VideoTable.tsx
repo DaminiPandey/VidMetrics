@@ -106,7 +106,7 @@ export default function VideoTable({ videos }: { videos: VideoInfo[] }) {
       {/* Controls */}
       <div className="mb-5 flex flex-col sm:flex-row flex-wrap items-start sm:items-center gap-3">
         {/* Search */}
-        <div className="relative">
+        <div className="relative w-full sm:w-auto">
           <svg
             className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted"
             fill="none"

@@ -161,7 +161,7 @@ export default function Home() {
             <button
               onClick={handleAnalyze}
               disabled={loading}
-              className="shrink-0 rounded-xl bg-accent px-6 sm:px-8 py-3.5 font-semibold text-text-inverse shadow-[0_0_20px_rgba(45,212,191,0.2)] transition-all hover:bg-accent-hover hover:shadow-[0_0_30px_rgba(45,212,191,0.3)] disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
+              className="shrink-0 rounded-xl bg-accent px-6 sm:px-8 py-3.5 font-semibold text-text-inverse shadow-[0_0_20px_rgba(45,212,191,0.2)] transition-all hover:bg-accent-hover hover:shadow-[0_0_30px_rgba(45,212,191,0.3)] disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none flex items-center justify-center"
             >
               {loading ? (
                 <span className="flex items-center gap-2">
@@ -255,13 +255,14 @@ export default function Home() {
                   <path d="M3 3v18h18" strokeLinecap="round" strokeLinejoin="round" />
                   <path d="m7 17 4-8 4 4 4-6" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
-                {showChart ? "Hide Charts" : "Show Charts"}
+                <span className="hidden md:inline">{showChart ? "Hide Charts" : "Show Charts"}</span>
+                <span className="md:hidden">{showChart ? "Hide Insights" : "Show Insights"}</span>
               </button>
             </div>
           )}
 
           {showChart && videos.length > 0 && (
-            <PerformanceChart videos={videos} />
+            <PerformanceChart videos={videos} channelName={channel.title} />
           )}
 
           {videos.length > 0 && <VideoTable videos={videos} />}
