@@ -20,6 +20,8 @@ export default function VideoTable({ videos }: { videos: VideoInfo[] }) {
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
   const [dateFilter, setDateFilter] = useState<DateFilter>("all");
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const perPage = 10;
 
   const filtered = useMemo(() => {
     let list = [...videos];
@@ -57,6 +59,11 @@ export default function VideoTable({ videos }: { videos: VideoInfo[] }) {
 
     return list;
   }, [videos, sortKey, sortDir, dateFilter, search]);
+
+  // Reset page when filters change
+  const totalPages = Math.ceil(filtered.length / perPage);
+  const paginatedPage = Math.min(page, totalPages || 1);
+  const paginated = filtered.slice((paginatedPage - 1) * perPage, paginatedPage * perPage);
 
   const toggleSort = (key: SortKey) => {
     if (sortKey === key) {
@@ -114,7 +121,7 @@ export default function VideoTable({ videos }: { videos: VideoInfo[] }) {
             type="text"
             placeholder="Search videos..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
             className="w-56 rounded-lg border border-border bg-bg-surface py-2 pl-9 pr-4 text-sm text-text-primary placeholder-text-muted transition-colors focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent-glow"
           />
         </div>
@@ -124,7 +131,7 @@ export default function VideoTable({ videos }: { videos: VideoInfo[] }) {
           {DATE_FILTERS.map((f) => (
             <button
               key={f.value}
-              onClick={() => setDateFilter(f.value)}
+              onClick={() => { setDateFilter(f.value); setPage(1); }}
               className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
                 dateFilter === f.value
                   ? "bg-accent text-text-inverse"
@@ -225,7 +232,7 @@ export default function VideoTable({ videos }: { videos: VideoInfo[] }) {
             </tr>
           </thead>
           <tbody>
-            {filtered.map((video) => {
+            {paginated.map((video) => {
               const eng = engagementRate(video.viewCount, video.likeCount, video.commentCount);
               const isTrending = topIds.has(video.id);
               return (
@@ -304,6 +311,44 @@ export default function VideoTable({ videos }: { videos: VideoInfo[] }) {
           </div>
         )}
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="mt-4 flex items-center justify-between">
+          <p className="text-sm text-text-muted">
+            Showing {(paginatedPage - 1) * perPage + 1}–{Math.min(paginatedPage * perPage, filtered.length)} of {filtered.length}
+          </p>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={paginatedPage <= 1}
+              className="rounded-lg border border-border px-3 py-1.5 text-sm text-text-secondary transition-colors hover:border-border-hover hover:text-text-primary disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              Previous
+            </button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+              <button
+                key={p}
+                onClick={() => setPage(p)}
+                className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
+                  p === paginatedPage
+                    ? "bg-accent text-text-inverse"
+                    : "border border-border text-text-muted hover:border-border-hover hover:text-text-primary"
+                }`}
+              >
+                {p}
+              </button>
+            ))}
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={paginatedPage >= totalPages}
+              className="rounded-lg border border-border px-3 py-1.5 text-sm text-text-secondary transition-colors hover:border-border-hover hover:text-text-primary disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
