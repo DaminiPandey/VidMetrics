@@ -93,11 +93,11 @@ export default function PerformanceChart({ videos }: { videos: VideoInfo[] }) {
   };
 
   return (
-    <div className="grid gap-6 lg:grid-cols-2">
+    <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
       {/* Top Videos Bar Chart */}
-      <div className="rounded-xl border border-border bg-bg-surface p-6">
-        <div className="mb-4 flex items-center justify-between">
-          <h3 className="flex items-center gap-2 text-lg font-semibold text-text-primary">
+      <div className="rounded-xl border border-border bg-bg-surface p-4 sm:p-6">
+        <div className="mb-3 sm:mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <h3 className="flex items-center gap-2 text-base sm:text-lg font-semibold text-text-primary">
             <BarChart3 className="h-5 w-5 text-accent" />
             Top Videos by Views
           </h3>
@@ -129,7 +129,7 @@ export default function PerformanceChart({ videos }: { videos: VideoInfo[] }) {
             ))}
           </div>
         </div>
-        <div className="h-72">
+        <div className="h-56 sm:h-72">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={topByViews} layout="vertical" margin={{ left: 10, right: 20 }}>
               <CartesianGrid strokeDasharray="3 3" stroke={tc.grid} horizontal={false} />
@@ -165,9 +165,9 @@ export default function PerformanceChart({ videos }: { videos: VideoInfo[] }) {
       </div>
 
       {/* Engagement Trend Line Chart */}
-      <div className="rounded-xl border border-border bg-bg-surface p-6">
-        <div className="mb-4 flex items-center justify-between">
-          <h3 className="flex items-center gap-2 text-lg font-semibold text-text-primary">
+      <div className="rounded-xl border border-border bg-bg-surface p-4 sm:p-6">
+        <div className="mb-3 sm:mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <h3 className="flex items-center gap-2 text-base sm:text-lg font-semibold text-text-primary">
             <TrendingUp className="h-5 w-5 text-accent" />
             Engagement Over Time
           </h3>
@@ -187,7 +187,7 @@ export default function PerformanceChart({ videos }: { videos: VideoInfo[] }) {
             ))}
           </div>
         </div>
-        <div className="h-72">
+        <div className="h-56 sm:h-72">
           {chronological.length > 0 ? (
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={chronological} margin={{ left: 0, right: 20, top: 10, bottom: 0 }}>

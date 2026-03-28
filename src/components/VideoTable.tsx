@@ -104,7 +104,7 @@ export default function VideoTable({ videos }: { videos: VideoInfo[] }) {
   return (
     <div>
       {/* Controls */}
-      <div className="mb-5 flex flex-wrap items-center gap-3">
+      <div className="mb-5 flex flex-col sm:flex-row flex-wrap items-start sm:items-center gap-3">
         {/* Search */}
         <div className="relative">
           <svg
@@ -122,17 +122,17 @@ export default function VideoTable({ videos }: { videos: VideoInfo[] }) {
             placeholder="Search videos..."
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            className="w-56 rounded-lg border border-border bg-bg-surface py-2 pl-9 pr-4 text-sm text-text-primary placeholder-text-muted transition-colors focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent-glow"
+            className="w-full sm:w-56 rounded-lg border border-border bg-bg-surface py-2 pl-9 pr-4 text-sm text-text-primary placeholder-text-muted transition-colors focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent-glow"
           />
         </div>
 
         {/* Date Filter Pills */}
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-1.5 sm:gap-2">
           {DATE_FILTERS.map((f) => (
             <button
               key={f.value}
               onClick={() => { setDateFilter(f.value); setPage(1); }}
-              className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+              className={`rounded-full px-3 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm font-medium transition-colors ${
                 dateFilter === f.value
                   ? "bg-accent text-text-inverse"
                   : "border border-border text-text-secondary hover:border-border-hover hover:text-text-primary"
@@ -144,7 +144,7 @@ export default function VideoTable({ videos }: { videos: VideoInfo[] }) {
         </div>
 
         {/* Right side */}
-        <div className="ml-auto flex items-center gap-3">
+        <div className="flex sm:ml-auto items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
           <span className="text-sm text-text-muted">
             {filtered.length} video{filtered.length !== 1 ? "s" : ""}
           </span>
@@ -162,17 +162,81 @@ export default function VideoTable({ videos }: { videos: VideoInfo[] }) {
         </div>
       </div>
 
-      {/* Table */}
-      <div className="overflow-x-auto rounded-xl border border-border">
-        <table className="w-full text-sm table-fixed">
+      {/* Mobile Cards */}
+      <div className="md:hidden space-y-3">
+        {paginated.length === 0 && (
+          <div className="py-12 text-center text-text-muted">
+            No videos match your filters.
+          </div>
+        )}
+        {paginated.map((video) => {
+          const eng = engagementRate(video.viewCount, video.likeCount, video.commentCount);
+          const isTrending = topIds.has(video.id);
+          return (
+            <a
+              key={video.id}
+              href={`https://youtube.com/watch?v=${video.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block rounded-xl border border-border bg-bg-surface p-3 transition-colors hover:border-border-hover"
+            >
+              <div className="flex gap-3">
+                <div className="relative shrink-0">
+                  <Image
+                    src={video.thumbnail}
+                    alt={video.title}
+                    width={100}
+                    height={56}
+                    className="rounded-lg object-cover"
+                  />
+                  <span className="absolute bottom-1 right-1 rounded bg-black/80 px-1 py-0.5 text-[9px] font-semibold text-white font-mono">
+                    {formatDuration(video.duration)}
+                  </span>
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium text-text-primary line-clamp-2">{video.title}</p>
+                  {isTrending && (
+                    <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-accent-dim px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-accent">
+                      Trending
+                    </span>
+                  )}
+                </div>
+              </div>
+              <div className="mt-2 grid grid-cols-4 gap-2 text-center">
+                <div>
+                  <p className="font-mono text-xs font-semibold text-text-primary">{formatNumber(video.viewCount)}</p>
+                  <p className="text-[10px] text-text-muted">Views</p>
+                </div>
+                <div>
+                  <p className="font-mono text-xs font-semibold text-text-secondary">{formatNumber(video.likeCount)}</p>
+                  <p className="text-[10px] text-text-muted">Likes</p>
+                </div>
+                <div>
+                  <p className="font-mono text-xs font-semibold text-text-secondary">{formatNumber(video.commentCount)}</p>
+                  <p className="text-[10px] text-text-muted">Comments</p>
+                </div>
+                <div>
+                  <p className={`font-mono text-xs font-semibold ${
+                    eng >= 5 ? "text-blue-400" : eng >= 2 ? "text-amber-400" : "text-rose-400"
+                  }`}>{eng.toFixed(1)}%</p>
+                  <p className="text-[10px] text-text-muted">Eng.</p>
+                </div>
+              </div>
+            </a>
+          );
+        })}
+      </div>
+
+      {/* Desktop Table */}
+      <div className="hidden md:block overflow-x-auto rounded-xl border border-border">
+        <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border bg-bg-surface text-left">
-              <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-text-muted" style={{ width: "40%" }}>
+              <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-text-muted w-[40%]">
                 Video
               </th>
               <th
-                className="cursor-pointer select-none whitespace-nowrap px-4 py-3 text-xs font-medium uppercase tracking-wider text-text-muted" style={{ width: "12%" }}
-                onClick={() => toggleSort("viewCount")}
+                className="cursor-pointer select-none whitespace-nowrap px-4 py-3 text-xs font-medium uppercase tracking-wider text-text-muted"                onClick={() => toggleSort("viewCount")}
               >
                 <span className="flex items-center gap-1">
                   <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
@@ -183,8 +247,7 @@ export default function VideoTable({ videos }: { videos: VideoInfo[] }) {
                 </span>
               </th>
               <th
-                className="cursor-pointer select-none whitespace-nowrap px-4 py-3 text-xs font-medium uppercase tracking-wider text-text-muted" style={{ width: "10%" }}
-                onClick={() => toggleSort("likeCount")}
+                className="cursor-pointer select-none whitespace-nowrap px-4 py-3 text-xs font-medium uppercase tracking-wider text-text-muted"                onClick={() => toggleSort("likeCount")}
               >
                 <span className="flex items-center gap-1">
                   <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
@@ -195,8 +258,7 @@ export default function VideoTable({ videos }: { videos: VideoInfo[] }) {
                 </span>
               </th>
               <th
-                className="cursor-pointer select-none whitespace-nowrap px-4 py-3 text-xs font-medium uppercase tracking-wider text-text-muted" style={{ width: "12%" }}
-                onClick={() => toggleSort("commentCount")}
+                className="cursor-pointer select-none whitespace-nowrap px-4 py-3 text-xs font-medium uppercase tracking-wider text-text-muted"                onClick={() => toggleSort("commentCount")}
               >
                 <span className="flex items-center gap-1">
                   <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
@@ -206,8 +268,7 @@ export default function VideoTable({ videos }: { videos: VideoInfo[] }) {
                 </span>
               </th>
               <th
-                className="cursor-pointer select-none whitespace-nowrap px-4 py-3 text-xs font-medium uppercase tracking-wider text-text-muted" style={{ width: "12%" }}
-                onClick={() => toggleSort("engagement")}
+                className="cursor-pointer select-none whitespace-nowrap px-4 py-3 text-xs font-medium uppercase tracking-wider text-text-muted"                onClick={() => toggleSort("engagement")}
               >
                 <span className="flex items-center gap-1">
                   <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
@@ -218,8 +279,7 @@ export default function VideoTable({ videos }: { videos: VideoInfo[] }) {
                 </span>
               </th>
               <th
-                className="cursor-pointer select-none whitespace-nowrap px-4 py-3 text-xs font-medium uppercase tracking-wider text-text-muted" style={{ width: "10%" }}
-                onClick={() => toggleSort("publishedAt")}
+                className="cursor-pointer select-none whitespace-nowrap px-4 py-3 text-xs font-medium uppercase tracking-wider text-text-muted"                onClick={() => toggleSort("publishedAt")}
               >
                 <span className="flex items-center gap-1">
                   <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
@@ -315,8 +375,8 @@ export default function VideoTable({ videos }: { videos: VideoInfo[] }) {
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="mt-4 flex items-center justify-between">
-          <p className="text-sm text-text-muted">
-            Showing {(paginatedPage - 1) * perPage + 1}–{Math.min(paginatedPage * perPage, filtered.length)} of {filtered.length}
+          <p className="text-xs sm:text-sm text-text-muted">
+            {paginatedPage} of {totalPages}
           </p>
           <div className="flex items-center gap-2">
             <button
@@ -326,19 +386,21 @@ export default function VideoTable({ videos }: { videos: VideoInfo[] }) {
             >
               Previous
             </button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-              <button
-                key={p}
-                onClick={() => setPage(p)}
-                className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
-                  p === paginatedPage
-                    ? "bg-accent text-text-inverse"
-                    : "border border-border text-text-muted hover:border-border-hover hover:text-text-primary"
-                }`}
-              >
-                {p}
-              </button>
-            ))}
+            <div className="hidden sm:flex items-center gap-2">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                <button
+                  key={p}
+                  onClick={() => setPage(p)}
+                  className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
+                    p === paginatedPage
+                      ? "bg-accent text-text-inverse"
+                      : "border border-border text-text-muted hover:border-border-hover hover:text-text-primary"
+                  }`}
+                >
+                  {p}
+                </button>
+              ))}
+            </div>
             <button
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={paginatedPage >= totalPages}

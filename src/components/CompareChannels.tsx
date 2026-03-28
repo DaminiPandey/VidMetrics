@@ -234,14 +234,14 @@ export default function CompareChannels({
             <p className="mb-3 text-sm font-medium text-text-secondary">
               Add channel to compare
             </p>
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <input
                 type="text"
                 value={compareInput}
                 onChange={(e) => setCompareInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && addChannel()}
                 placeholder="@handle or URL..."
-                className="flex-1 rounded-lg border border-border bg-bg-base px-3 py-2 text-sm text-text-primary placeholder-text-muted transition-colors focus:border-accent focus:outline-none"
+                className="flex-1 w-full rounded-lg border border-border bg-bg-base px-3 py-2 text-sm text-text-primary placeholder-text-muted transition-colors focus:border-accent focus:outline-none"
               />
               <button
                 onClick={addChannel}

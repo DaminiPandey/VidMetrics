@@ -48,14 +48,14 @@ export default function Home() {
     <div className="flex min-h-screen flex-col bg-bg-base">
       {/* Header */}
       <header className="relative z-10 border-b border-border/50 bg-bg-base/80 backdrop-blur-md">
-        <div className="mx-auto flex max-w-[1280px] items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-yt-red shadow-[0_0_12px_rgba(255,0,0,0.3)]">
+        <div className="mx-auto flex max-w-[1280px] items-center justify-between px-4 sm:px-6 py-4">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg bg-yt-red shadow-[0_0_12px_rgba(255,0,0,0.3)]">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
                 <polygon points="10,8 16,12 10,16" />
               </svg>
             </div>
-            <span className="text-lg font-semibold tracking-tight text-text-primary">
+            <span className="text-base sm:text-lg font-semibold tracking-tight text-text-primary">
               VidMetrics
             </span>
             <span className="hidden sm:inline-block rounded-full bg-accent-dim border border-accent/20 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-accent">
@@ -79,10 +79,10 @@ export default function Home() {
 
       {/* Hero + Search */}
       <section
-        className={`relative mx-auto w-full max-w-[1280px] px-6 text-center ${
+        className={`relative mx-auto w-full max-w-[1280px] px-4 sm:px-6 text-center ${
           !channel
-            ? "flex flex-1 flex-col items-center justify-center py-12"
-            : "pt-16 pb-12"
+            ? "flex flex-1 flex-col items-center justify-center py-8 sm:py-12"
+            : "pt-10 sm:pt-16 pb-8 sm:pb-12"
         }`}
       >
         {/* Background Effects — only on landing */}
@@ -119,7 +119,7 @@ export default function Home() {
             </div>
           )}
 
-          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
             See What&#39;s Winning
             <br />
             <span className="bg-gradient-to-r from-accent via-teal-300 to-accent bg-clip-text text-transparent">
@@ -131,7 +131,7 @@ export default function Home() {
           </p>
 
           {/* Search Bar */}
-          <div className="mt-10 flex gap-3">
+          <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row gap-3">
             <div className="group relative flex-1">
               {/* Glow effect behind input */}
               <div className="absolute -inset-0.5 rounded-xl bg-gradient-to-r from-accent/20 via-accent/5 to-yt-red/10 opacity-0 blur transition-opacity group-focus-within:opacity-100" />
@@ -159,7 +159,7 @@ export default function Home() {
             <button
               onClick={handleAnalyze}
               disabled={loading}
-              className="shrink-0 rounded-xl bg-accent px-8 py-3.5 font-semibold text-text-inverse shadow-[0_0_20px_rgba(45,212,191,0.2)] transition-all hover:bg-accent-hover hover:shadow-[0_0_30px_rgba(45,212,191,0.3)] disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
+              className="shrink-0 rounded-xl bg-accent px-6 sm:px-8 py-3.5 font-semibold text-text-inverse shadow-[0_0_20px_rgba(45,212,191,0.2)] transition-all hover:bg-accent-hover hover:shadow-[0_0_30px_rgba(45,212,191,0.3)] disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
             >
               {loading ? (
                 <span className="flex items-center gap-2">
@@ -196,7 +196,7 @@ export default function Home() {
 
           {/* Trust indicators */}
           {!channel && (
-            <div className="mt-12 flex flex-wrap items-center justify-center gap-6 text-sm text-text-muted">
+            <div className="mt-8 sm:mt-12 flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-xs sm:text-sm text-text-muted">
               <div className="flex items-center gap-2">
                 <svg className="h-4 w-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
                   <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" strokeLinecap="round" strokeLinejoin="round" />
@@ -226,7 +226,7 @@ export default function Home() {
 
       {/* Results */}
       {channel && (
-        <section className="mx-auto max-w-[1280px] space-y-8 px-6 pb-20">
+        <section className="mx-auto max-w-[1280px] space-y-6 sm:space-y-8 px-4 sm:px-6 pb-20">
           <ChannelCard
             channel={channel}
             onCompare={() => setShowCompare(!showCompare)}
