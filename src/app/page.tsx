@@ -51,15 +51,17 @@ export default function Home() {
         <div className="mx-auto flex max-w-[1280px] items-center justify-between px-4 sm:px-6 py-4">
           <div className="flex items-center gap-2 sm:gap-3">
             <div className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg bg-yt-red shadow-[0_0_12px_rgba(255,0,0,0.3)]">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
-                <polygon points="10,8 16,12 10,16" />
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <rect x="3" y="14" width="5" height="7" rx="1" fill="white" />
+                <rect x="10" y="9" width="5" height="12" rx="1" fill="white" />
+                <rect x="17" y="4" width="5" height="17" rx="1" fill="white" />
               </svg>
             </div>
-            <span className="text-base sm:text-lg font-semibold tracking-tight text-text-primary">
-              VidMetrics
+            <span className="text-base sm:text-lg font-semibold tracking-tight">
+              <span className="text-text-primary">Vid</span><span className="text-accent">Metrics</span>
             </span>
             <span className="hidden sm:inline-block rounded-full bg-accent-dim border border-accent/20 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-accent">
-              Beta
+              Alpha
             </span>
           </div>
           <div className="flex items-center gap-2">
