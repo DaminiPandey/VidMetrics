@@ -281,7 +281,7 @@ export default function VideoTable({ videos }: { videos: VideoInfo[] }) {
                     <span
                       className={`inline-block rounded-full px-2.5 py-0.5 font-mono text-sm font-medium ${
                         eng >= 5
-                          ? "bg-emerald-500/15 text-emerald-400"
+                          ? "bg-blue-500/15 text-blue-400"
                           : eng >= 2
                             ? "bg-amber-500/15 text-amber-400"
                             : "bg-rose-500/15 text-rose-400"
