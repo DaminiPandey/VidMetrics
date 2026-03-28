@@ -3,6 +3,7 @@ import {
   resolveChannelId,
   getChannelInfo,
   getChannelVideos,
+  QuotaExceededError,
 } from "@/lib/youtube";
 
 export async function GET(req: NextRequest) {
@@ -38,6 +39,12 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ channel, videos });
   } catch (err) {
+    if (err instanceof QuotaExceededError) {
+      return NextResponse.json(
+        { error: "YouTube API daily quota exceeded. Please try again tomorrow or use a different API key." },
+        { status: 429 }
+      );
+    }
     console.error("API error:", err);
     return NextResponse.json(
       { error: "Something went wrong. Please try again." },
