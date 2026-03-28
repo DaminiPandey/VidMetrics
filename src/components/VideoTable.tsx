@@ -164,14 +164,14 @@ export default function VideoTable({ videos }: { videos: VideoInfo[] }) {
 
       {/* Table */}
       <div className="overflow-x-auto rounded-xl border border-border">
-        <table className="w-full text-sm">
+        <table className="w-full text-sm table-fixed">
           <thead>
             <tr className="border-b border-border bg-bg-surface text-left">
-              <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-text-muted w-[45%]">
+              <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-text-muted" style={{ width: "40%" }}>
                 Video
               </th>
               <th
-                className="cursor-pointer select-none whitespace-nowrap px-4 py-3 text-xs font-medium uppercase tracking-wider text-text-muted"
+                className="cursor-pointer select-none whitespace-nowrap px-4 py-3 text-xs font-medium uppercase tracking-wider text-text-muted" style={{ width: "12%" }}
                 onClick={() => toggleSort("viewCount")}
               >
                 <span className="flex items-center gap-1">
@@ -183,7 +183,7 @@ export default function VideoTable({ videos }: { videos: VideoInfo[] }) {
                 </span>
               </th>
               <th
-                className="cursor-pointer select-none whitespace-nowrap px-4 py-3 text-xs font-medium uppercase tracking-wider text-text-muted"
+                className="cursor-pointer select-none whitespace-nowrap px-4 py-3 text-xs font-medium uppercase tracking-wider text-text-muted" style={{ width: "10%" }}
                 onClick={() => toggleSort("likeCount")}
               >
                 <span className="flex items-center gap-1">
@@ -195,7 +195,7 @@ export default function VideoTable({ videos }: { videos: VideoInfo[] }) {
                 </span>
               </th>
               <th
-                className="cursor-pointer select-none whitespace-nowrap px-4 py-3 text-xs font-medium uppercase tracking-wider text-text-muted"
+                className="cursor-pointer select-none whitespace-nowrap px-4 py-3 text-xs font-medium uppercase tracking-wider text-text-muted" style={{ width: "12%" }}
                 onClick={() => toggleSort("commentCount")}
               >
                 <span className="flex items-center gap-1">
@@ -206,7 +206,7 @@ export default function VideoTable({ videos }: { videos: VideoInfo[] }) {
                 </span>
               </th>
               <th
-                className="cursor-pointer select-none whitespace-nowrap px-4 py-3 text-xs font-medium uppercase tracking-wider text-text-muted"
+                className="cursor-pointer select-none whitespace-nowrap px-4 py-3 text-xs font-medium uppercase tracking-wider text-text-muted" style={{ width: "12%" }}
                 onClick={() => toggleSort("engagement")}
               >
                 <span className="flex items-center gap-1">
@@ -218,7 +218,7 @@ export default function VideoTable({ videos }: { videos: VideoInfo[] }) {
                 </span>
               </th>
               <th
-                className="cursor-pointer select-none whitespace-nowrap px-4 py-3 text-xs font-medium uppercase tracking-wider text-text-muted"
+                className="cursor-pointer select-none whitespace-nowrap px-4 py-3 text-xs font-medium uppercase tracking-wider text-text-muted" style={{ width: "10%" }}
                 onClick={() => toggleSort("publishedAt")}
               >
                 <span className="flex items-center gap-1">

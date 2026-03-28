@@ -14,6 +14,7 @@ import {
 } from "recharts";
 import { BarChart3, TrendingUp } from "lucide-react";
 import { formatNumber, engagementRate } from "@/lib/utils";
+import { useTheme } from "@/lib/useTheme";
 import type { VideoInfo } from "@/lib/youtube";
 
 type ChartDateFilter = "7d" | "14d" | "30d" | "all";
@@ -36,6 +37,8 @@ const TOP_COUNTS: { value: TopCount; label: string }[] = [
 export default function PerformanceChart({ videos }: { videos: VideoInfo[] }) {
   const [engDateFilter, setEngDateFilter] = useState<ChartDateFilter>("all");
   const [topCount, setTopCount] = useState<TopCount>(10);
+  const [logScale, setLogScale] = useState(false);
+  const { colors: tc } = useTheme();
 
   const topByViews = useMemo(() => {
     return [...videos]
@@ -83,8 +86,8 @@ export default function PerformanceChart({ videos }: { videos: VideoInfo[] }) {
   }, [videos, engDateFilter]);
 
   const tooltipStyle = {
-    backgroundColor: "#1a1a2e",
-    border: "1px solid #2a2a4a",
+    backgroundColor: tc.tooltipBg,
+    border: `1px solid ${tc.tooltipBorder}`,
     borderRadius: "12px",
     fontSize: "13px",
   };
@@ -98,7 +101,19 @@ export default function PerformanceChart({ videos }: { videos: VideoInfo[] }) {
             <BarChart3 className="h-5 w-5 text-accent" />
             Top Videos by Views
           </h3>
-          <div className="flex gap-1.5">
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => setLogScale(!logScale)}
+              className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                logScale
+                  ? "bg-accent text-text-inverse"
+                  : "border border-border text-text-muted hover:border-border-hover hover:text-text-primary"
+              }`}
+              title="Toggle logarithmic scale"
+            >
+              Log
+            </button>
+            <span className="mx-1 h-4 w-px bg-border" />
             {TOP_COUNTS.map((t) => (
               <button
                 key={t.value}
@@ -117,23 +132,25 @@ export default function PerformanceChart({ videos }: { videos: VideoInfo[] }) {
         <div className="h-72">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={topByViews} layout="vertical" margin={{ left: 10, right: 20 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#2a2a4a" horizontal={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke={tc.grid} horizontal={false} />
               <XAxis
                 type="number"
+                scale={logScale ? "log" : "auto"}
+                domain={logScale ? [1, "auto"] : [0, "auto"]}
                 tickFormatter={(v) => formatNumber(v)}
-                stroke="#6b7280"
+                stroke={tc.axis}
                 fontSize={11}
               />
               <YAxis
                 type="category"
                 dataKey="name"
                 width={160}
-                stroke="#6b7280"
+                stroke={tc.axis}
                 fontSize={11}
-                tick={{ fill: "#a1a1aa" }}
+                tick={{ fill: tc.axisLabel }}
               />
               <Tooltip
-                cursor={{ fill: "rgba(45, 212, 191, 0.06)" }}
+                cursor={{ fill: tc.cursor }}
                 contentStyle={tooltipStyle}
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 labelFormatter={(_: any, payload: readonly any[]) => payload?.[0]?.payload?.fullTitle || _}
@@ -141,7 +158,7 @@ export default function PerformanceChart({ videos }: { videos: VideoInfo[] }) {
                 formatter={(value: any) => [formatNumber(Number(value)), "Views"]}
                 labelStyle={{ color: "#e5e7eb", fontWeight: 600, maxWidth: 300, whiteSpace: "normal" as const }}
               />
-              <Bar dataKey="views" fill="#2dd4bf" radius={[0, 6, 6, 0]} />
+              <Bar dataKey="views" fill={tc.accent} radius={[0, 6, 6, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -176,9 +193,9 @@ export default function PerformanceChart({ videos }: { videos: VideoInfo[] }) {
               <AreaChart data={chronological} margin={{ left: 0, right: 20, top: 10, bottom: 0 }}>
                 <defs>
                   <linearGradient id="engGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#2dd4bf" stopOpacity={0.3} />
-                    <stop offset="50%" stopColor="#2dd4bf" stopOpacity={0.1} />
-                    <stop offset="100%" stopColor="#2dd4bf" stopOpacity={0} />
+                    <stop offset="0%" stopColor={tc.accent} stopOpacity={0.3} />
+                    <stop offset="50%" stopColor={tc.accent} stopOpacity={0.1} />
+                    <stop offset="100%" stopColor={tc.accent} stopOpacity={0} />
                   </linearGradient>
                   <filter id="glow">
                     <feGaussianBlur stdDeviation="3" result="coloredBlur" />
@@ -188,15 +205,15 @@ export default function PerformanceChart({ videos }: { videos: VideoInfo[] }) {
                     </feMerge>
                   </filter>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#2a2a4a" />
+                <CartesianGrid strokeDasharray="3 3" stroke={tc.grid} />
                 <XAxis
                   dataKey="date"
-                  stroke="#6b7280"
+                  stroke={tc.axis}
                   fontSize={11}
-                  tick={{ fill: "#a1a1aa" }}
+                  tick={{ fill: tc.axisLabel }}
                 />
                 <YAxis
-                  stroke="#6b7280"
+                  stroke={tc.axis}
                   fontSize={11}
                   tickFormatter={(v) => `${v}%`}
                 />
@@ -204,17 +221,17 @@ export default function PerformanceChart({ videos }: { videos: VideoInfo[] }) {
                   contentStyle={tooltipStyle}
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   formatter={(value: any) => [`${Number(value).toFixed(2)}%`, "Engagement"]}
-                  labelStyle={{ color: "#e5e7eb" }}
+                  labelStyle={{ color: tc.tooltipText }}
                 />
                 <Area
                   type="monotone"
                   dataKey="engagement"
-                  stroke="#2dd4bf"
+                  stroke={tc.accent}
                   strokeWidth={2.5}
                   fill="url(#engGradient)"
                   filter="url(#glow)"
-                  dot={{ r: 4, fill: "#1a1a2e", stroke: "#2dd4bf", strokeWidth: 2 }}
-                  activeDot={{ r: 6, fill: "#2dd4bf", stroke: "#1a1a2e", strokeWidth: 2 }}
+                  dot={{ r: 4, fill: tc.dotFill, stroke: tc.accent, strokeWidth: 2 }}
+                  activeDot={{ r: 6, fill: tc.accent, stroke: tc.dotFill, strokeWidth: 2 }}
                 />
               </AreaChart>
             </ResponsiveContainer>

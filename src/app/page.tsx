@@ -5,6 +5,7 @@ import ChannelCard from "@/components/ChannelCard";
 import VideoTable from "@/components/VideoTable";
 import PerformanceChart from "@/components/PerformanceChart";
 import CompareChannels from "@/components/CompareChannels";
+import ThemeToggle from "@/components/ThemeToggle";
 import type { ChannelInfo, VideoInfo } from "@/lib/youtube";
 
 export default function Home() {
@@ -61,7 +62,7 @@ export default function Home() {
               Beta
             </span>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <a
               href="https://github.com/DaminiPandey/VidMetrics"
               target="_blank"
@@ -70,6 +71,7 @@ export default function Home() {
             >
               GitHub
             </a>
+            <ThemeToggle />
           </div>
         </div>
       </header>

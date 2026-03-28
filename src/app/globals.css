@@ -45,6 +45,40 @@
 body {
   background-color: var(--color-bg-base);
   color: var(--color-text-primary);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Light Theme Overrides */
+.light {
+  --color-bg-base: #f8f9fb;
+  --color-bg-surface: #ffffff;
+  --color-bg-surface-hover: #f5f6fa;
+  --color-bg-surface-active: #e8ebf0;
+  --color-bg-overlay: rgba(248, 249, 251, 0.8);
+
+  --color-border: #e2e4ea;
+  --color-border-hover: #c8ccd4;
+  --color-border-focus: #0d9488;
+
+  --color-text-primary: #111827;
+  --color-text-secondary: #374151;
+  --color-text-muted: #6b7280;
+  --color-text-inverse: #ffffff;
+
+  --color-accent: #0d9488;
+  --color-accent-hover: #0f766e;
+  --color-accent-dim: rgba(13, 148, 136, 0.08);
+  --color-accent-glow: rgba(13, 148, 136, 0.15);
+
+  --color-yt-red: #ff0000;
+  --color-yt-red-dim: rgba(255, 0, 0, 0.08);
+
+  --color-success: #16a34a;
+  --color-success-dim: rgba(22, 163, 74, 0.08);
+  --color-warning: #ca8a04;
+  --color-warning-dim: rgba(202, 138, 4, 0.08);
+  --color-danger: #dc2626;
+  --color-danger-dim: rgba(220, 38, 38, 0.08);
 }
 
 /* Scrollbar */
