@@ -169,7 +169,7 @@ export default function PerformanceChart({ videos, channelName }: { videos: Vide
         </div>
         <div className="h-56 sm:h-72">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={topByViews} layout="vertical" margin={{ left: 10, right: 20 }}>
+            <BarChart data={topByViews} layout="vertical" margin={{ left: 0, right: 10 }}>
               <CartesianGrid strokeDasharray="3 3" stroke={tc.grid} horizontal={false} />
               <XAxis
                 type="number"
@@ -182,7 +182,7 @@ export default function PerformanceChart({ videos, channelName }: { videos: Vide
               <YAxis
                 type="category"
                 dataKey="name"
-                width={160}
+                width={130}
                 stroke={tc.axis}
                 fontSize={11}
                 tick={{ fill: tc.axisLabel }}

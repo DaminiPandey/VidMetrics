@@ -17,8 +17,27 @@ export default function Home() {
   const [showChart, setShowChart] = useState(true);
   const [showCompare, setShowCompare] = useState(false);
   const [globalDateFilter, setGlobalDateFilter] = useState<string>("all");
-  const [globalStartDate, setGlobalStartDate] = useState("");
-  const [globalEndDate, setGlobalEndDate] = useState("");
+  const [globalStartDate, setGlobalStartDate] = useState(() => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-01`;
+  });
+  const [globalEndDate, setGlobalEndDate] = useState(() => {
+    return new Date().toISOString().split("T")[0];
+  });
+
+  const handleDateFilterChange = (filter: string) => {
+    setGlobalDateFilter(filter);
+    if (filter === "custom") {
+      // Reset to current month when switching to custom
+      const d = new Date();
+      setGlobalStartDate(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-01`);
+      setGlobalEndDate(new Date().toISOString().split("T")[0]);
+    } else {
+      // Non-custom pills use their own cutoff logic, clear custom dates
+      setGlobalStartDate("");
+      setGlobalEndDate("");
+    }
+  };
 
   // Filter videos based on global date filter
   const filteredByDate = (() => {
@@ -34,7 +53,11 @@ export default function Home() {
       }
     } else if (globalDateFilter !== "all") {
       const now = Date.now();
-      const cutoffs: Record<string, number> = { week: 7 * 86400000, month: 30 * 86400000, "3months": 90 * 86400000 };
+      const cutoffs: Record<string, number> = {
+        week: 7 * 86400000,
+        month: 30 * 86400000,
+        "3months": 90 * 86400000,
+      };
       const cutoff = now - (cutoffs[globalDateFilter] || 0);
       list = list.filter((v) => new Date(v.publishedAt).getTime() >= cutoff);
     }
@@ -50,7 +73,7 @@ export default function Home() {
 
     try {
       const res = await fetch(
-        `/api/channel?q=${encodeURIComponent(query.trim())}`
+        `/api/channel?q=${encodeURIComponent(query.trim())}`,
       );
       const data = await res.json();
 
@@ -72,7 +95,7 @@ export default function Home() {
     <div className="flex min-h-screen flex-col bg-bg-base">
       {/* Header */}
       <header className="relative z-10 border-b border-border/50 bg-bg-base/80 backdrop-blur-md">
-        <div className="mx-auto flex max-w-[1280px] items-center justify-between px-4 sm:px-6 py-4">
+        <div className="mx-auto flex max-w-[1200px] items-center justify-between px-4 sm:px-6 py-4">
           <div className="flex items-center gap-2 sm:gap-3">
             <div className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg bg-yt-red shadow-[0_0_12px_rgba(255,0,0,0.3)]">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
@@ -82,7 +105,8 @@ export default function Home() {
               </svg>
             </div>
             <span className="text-base sm:text-lg font-semibold tracking-tight">
-              <span className="text-text-primary">Vid</span><span className="text-accent">Metrics</span>
+              <span className="text-text-primary">Vid</span>
+              <span className="text-accent">Metrics</span>
             </span>
             <span className="hidden sm:inline-block rounded-full bg-accent-dim border border-accent/20 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-accent">
               Alpha
@@ -96,7 +120,9 @@ export default function Home() {
               className="flex h-8 w-8 items-center justify-center rounded-lg border border-border-hover text-text-secondary transition-colors hover:border-accent hover:text-text-primary"
               aria-label="GitHub repository"
             >
-              <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12Z"/></svg>
+              <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12Z" />
+              </svg>
             </a>
             <ThemeToggle />
           </div>
@@ -105,7 +131,7 @@ export default function Home() {
 
       {/* Hero + Search */}
       <section
-        className={`relative mx-auto w-full max-w-[1280px] px-4 sm:px-6 text-center ${
+        className={`relative mx-auto w-full max-w-[1200x] px-4 sm:px-6 text-center ${
           !channel
             ? "flex flex-1 flex-col items-center justify-center py-8 sm:py-12"
             : "pt-10 sm:pt-16 pb-8 sm:pb-12"
@@ -126,7 +152,8 @@ export default function Home() {
             <div
               className="pointer-events-none absolute inset-0 opacity-[0.03]"
               style={{
-                backgroundImage: "radial-gradient(circle, #ffffff 1px, transparent 1px)",
+                backgroundImage:
+                  "radial-gradient(circle, #ffffff 1px, transparent 1px)",
                 backgroundSize: "32px 32px",
               }}
             />
@@ -153,7 +180,8 @@ export default function Home() {
             </span>
           </h1>
           <p className="mt-5 text-lg text-text-secondary sm:text-xl animate-fade-up-delay-2">
-            Drop a channel link. Get instant insights on their top-performing content.
+            Drop a channel link. Get instant insights on their top-performing
+            content.
           </p>
 
           {/* Search Bar */}
@@ -216,32 +244,79 @@ export default function Home() {
             </button>
           </div>
 
-          {error && (
-            <p className="mt-4 text-sm text-danger">{error}</p>
-          )}
+          {error && <p className="mt-4 text-sm text-danger">{error}</p>}
 
           {/* Trust indicators */}
           {!channel && (
             <div className="mt-8 sm:mt-12 flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-xs sm:text-sm text-text-muted">
               <div className="flex items-center gap-2">
-                <svg className="h-4 w-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
-                  <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" strokeLinecap="round" strokeLinejoin="round" />
-                  <polyline points="16 7 22 7 22 13" strokeLinecap="round" strokeLinejoin="round" />
+                <svg
+                  className="h-4 w-4 text-accent"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  strokeWidth="2"
+                >
+                  <polyline
+                    points="22 7 13.5 15.5 8.5 10.5 2 17"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <polyline
+                    points="16 7 22 7 22 13"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
                 Views &amp; engagement metrics
               </div>
               <div className="flex items-center gap-2">
-                <svg className="h-4 w-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
-                  <path d="M3 3v18h18" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="m7 17 4-8 4 4 4-6" strokeLinecap="round" strokeLinejoin="round" />
+                <svg
+                  className="h-4 w-4 text-accent"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  strokeWidth="2"
+                >
+                  <path
+                    d="M3 3v18h18"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="m7 17 4-8 4 4 4-6"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
                 Performance charts
               </div>
               <div className="flex items-center gap-2">
-                <svg className="h-4 w-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" strokeLinecap="round" strokeLinejoin="round" />
-                  <polyline points="7 10 12 15 17 10" strokeLinecap="round" strokeLinejoin="round" />
-                  <line x1="12" x2="12" y1="15" y2="3" strokeLinecap="round" strokeLinejoin="round" />
+                <svg
+                  className="h-4 w-4 text-accent"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  strokeWidth="2"
+                >
+                  <path
+                    d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <polyline
+                    points="7 10 12 15 17 10"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <line
+                    x1="12"
+                    x2="12"
+                    y1="15"
+                    y2="3"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
                 CSV export
               </div>
@@ -252,7 +327,7 @@ export default function Home() {
 
       {/* Results */}
       {channel && (
-        <section className="mx-auto max-w-[1280px] space-y-6 sm:space-y-8 px-4 sm:px-6 pb-20">
+        <section className="mx-auto max-w-[1200px] space-y-6 sm:space-y-8 px-4 sm:px-6 pb-20">
           <ChannelCard
             channel={channel}
             onCompare={() => setShowCompare(!showCompare)}
@@ -275,25 +350,46 @@ export default function Home() {
                     : "border border-border text-text-secondary hover:border-border-hover hover:text-text-primary"
                 }`}
               >
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
-                  <path d="M3 3v18h18" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="m7 17 4-8 4 4 4-6" strokeLinecap="round" strokeLinejoin="round" />
+                <svg
+                  className="h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  strokeWidth="2"
+                >
+                  <path
+                    d="M3 3v18h18"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="m7 17 4-8 4 4 4-6"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
-                <span className="hidden md:inline">{showChart ? "Hide Charts" : "Show Charts"}</span>
-                <span className="md:hidden">{showChart ? "Hide Insights" : "Show Insights"}</span>
+                <span className="hidden md:inline">
+                  {showChart ? "Hide Charts" : "Show Charts"}
+                </span>
+                <span className="md:hidden">
+                  {showChart ? "Hide Insights" : "Show Insights"}
+                </span>
               </button>
             </div>
           )}
 
           {showChart && filteredByDate.length > 0 && (
-            <PerformanceChart videos={filteredByDate} channelName={channel.title} />
+            <PerformanceChart
+              videos={filteredByDate}
+              channelName={channel.title}
+            />
           )}
 
           {videos.length > 0 && (
             <VideoTable
               videos={videos}
               dateFilter={globalDateFilter}
-              onDateFilterChange={setGlobalDateFilter}
+              onDateFilterChange={handleDateFilterChange}
               startDate={globalStartDate}
               onStartDateChange={setGlobalStartDate}
               endDate={globalEndDate}
