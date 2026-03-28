@@ -112,7 +112,7 @@ export default function Home() {
         <div className="relative z-10 mx-auto max-w-3xl">
           {/* Eyebrow badge */}
           {!channel && (
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-bg-surface/50 px-4 py-1.5 text-sm text-text-secondary backdrop-blur-sm">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-bg-surface/50 px-4 py-1.5 text-sm text-text-secondary backdrop-blur-sm animate-fade-up">
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-75" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-accent" />
@@ -121,19 +121,19 @@ export default function Home() {
             </div>
           )}
 
-          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl animate-fade-up-delay-1">
             See What&#39;s Winning
             <br />
             <span className="bg-gradient-to-r from-accent via-teal-300 to-accent bg-clip-text text-transparent">
               on YouTube
             </span>
           </h1>
-          <p className="mt-5 text-lg text-text-secondary sm:text-xl">
+          <p className="mt-5 text-lg text-text-secondary sm:text-xl animate-fade-up-delay-2">
             Drop a channel link. Get instant insights on their top-performing content.
           </p>
 
           {/* Search Bar */}
-          <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row gap-3">
+          <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row gap-3 animate-fade-up-delay-3">
             <div className="group relative flex-1">
               {/* Glow effect behind input */}
               <div className="absolute -inset-0.5 rounded-xl bg-gradient-to-r from-accent/20 via-accent/5 to-yt-red/10 opacity-0 blur transition-opacity group-focus-within:opacity-100" />
