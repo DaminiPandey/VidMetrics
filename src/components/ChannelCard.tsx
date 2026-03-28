@@ -1,16 +1,24 @@
 "use client";
 
 import Image from "next/image";
+import { GitCompareArrows } from "lucide-react";
 import { formatNumber } from "@/lib/utils";
 import type { ChannelInfo } from "@/lib/youtube";
 
-export default function ChannelCard({ channel }: { channel: ChannelInfo }) {
+export default function ChannelCard({
+  channel,
+  onCompare,
+  isComparing,
+}: {
+  channel: ChannelInfo;
+  onCompare?: () => void;
+  isComparing?: boolean;
+}) {
   return (
     <div className="rounded-xl border border-border bg-bg-surface p-6 transition-colors hover:border-border-hover">
       <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
         {/* Channel Info */}
         <div className="flex flex-1 items-center gap-4 min-w-0">
-          {/* YouTube Icon */}
           <div className="relative shrink-0">
             <Image
               src={channel.thumbnail}
@@ -75,20 +83,35 @@ export default function ChannelCard({ channel }: { channel: ChannelInfo }) {
           />
         </div>
 
-        {/* View Channel Link */}
-        <a
-          href={`https://youtube.com/${channel.customUrl || `channel/${channel.id}`}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hidden lg:flex shrink-0 items-center gap-2 rounded-full border border-accent px-4 py-2 text-sm font-medium text-accent transition-colors hover:bg-accent-dim"
-        >
-          View Channel
-          <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
-            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" strokeLinecap="round" strokeLinejoin="round" />
-            <polyline points="15 3 21 3 21 9" strokeLinecap="round" strokeLinejoin="round" />
-            <line x1="10" x2="21" y1="14" y2="3" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </a>
+        {/* Action Buttons */}
+        <div className="hidden lg:flex shrink-0 items-center gap-2">
+          {onCompare && (
+            <button
+              onClick={onCompare}
+              className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                isComparing
+                  ? "bg-accent text-text-inverse"
+                  : "border border-border text-text-secondary hover:border-accent hover:text-accent"
+              }`}
+            >
+              <GitCompareArrows className="h-3.5 w-3.5" />
+              Compare
+            </button>
+          )}
+          <a
+            href={`https://youtube.com/${channel.customUrl || `channel/${channel.id}`}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 rounded-full border border-accent px-4 py-2 text-sm font-medium text-accent transition-colors hover:bg-accent-dim"
+          >
+            View Channel
+            <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" strokeLinecap="round" strokeLinejoin="round" />
+              <polyline points="15 3 21 3 21 9" strokeLinecap="round" strokeLinejoin="round" />
+              <line x1="10" x2="21" y1="14" y2="3" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </a>
+        </div>
       </div>
     </div>
   );

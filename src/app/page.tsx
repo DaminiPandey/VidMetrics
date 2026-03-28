@@ -4,6 +4,7 @@ import { useState } from "react";
 import ChannelCard from "@/components/ChannelCard";
 import VideoTable from "@/components/VideoTable";
 import PerformanceChart from "@/components/PerformanceChart";
+import CompareChannels from "@/components/CompareChannels";
 import type { ChannelInfo, VideoInfo } from "@/lib/youtube";
 
 export default function Home() {
@@ -13,6 +14,7 @@ export default function Home() {
   const [channel, setChannel] = useState<ChannelInfo | null>(null);
   const [videos, setVideos] = useState<VideoInfo[]>([]);
   const [showChart, setShowChart] = useState(true);
+  const [showCompare, setShowCompare] = useState(false);
 
   const handleAnalyze = async () => {
     if (!query.trim()) return;
@@ -222,9 +224,18 @@ export default function Home() {
       {/* Results */}
       {channel && (
         <section className="mx-auto max-w-[1280px] space-y-8 px-6 pb-20">
-          <ChannelCard channel={channel} />
+          <ChannelCard
+            channel={channel}
+            onCompare={() => setShowCompare(!showCompare)}
+            isComparing={showCompare}
+          />
 
-          {/* Chart toggle */}
+          {/* Channel Comparison — right after channel card */}
+          {showCompare && videos.length > 0 && (
+            <CompareChannels primaryChannel={channel} primaryVideos={videos} />
+          )}
+
+          {/* Action buttons */}
           {videos.length > 0 && (
             <div className="flex items-center gap-3">
               <button

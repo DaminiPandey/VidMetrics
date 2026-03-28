@@ -136,7 +136,7 @@ export default function PerformanceChart({ videos }: { videos: VideoInfo[] }) {
                 cursor={{ fill: "rgba(45, 212, 191, 0.06)" }}
                 contentStyle={tooltipStyle}
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                labelFormatter={(_: any, payload: any[]) => payload?.[0]?.payload?.fullTitle || _}
+                labelFormatter={(_: any, payload: readonly any[]) => payload?.[0]?.payload?.fullTitle || _}
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 formatter={(value: any) => [formatNumber(Number(value)), "Views"]}
                 labelStyle={{ color: "#e5e7eb", fontWeight: 600, maxWidth: 300, whiteSpace: "normal" as const }}
