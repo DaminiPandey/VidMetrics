@@ -80,7 +80,7 @@ export default function ChannelCard({ channel }: { channel: ChannelInfo }) {
           href={`https://youtube.com/${channel.customUrl || `channel/${channel.id}`}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="hidden lg:flex shrink-0 items-center gap-2 rounded-full border border-yt-red px-4 py-2 text-sm font-medium text-yt-red transition-colors hover:bg-yt-red-dim"
+          className="hidden lg:flex shrink-0 items-center gap-2 rounded-full border border-accent px-4 py-2 text-sm font-medium text-accent transition-colors hover:bg-accent-dim"
         >
           View Channel
           <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
