@@ -16,6 +16,30 @@ export default function Home() {
   const [videos, setVideos] = useState<VideoInfo[]>([]);
   const [showChart, setShowChart] = useState(true);
   const [showCompare, setShowCompare] = useState(false);
+  const [globalDateFilter, setGlobalDateFilter] = useState<string>("all");
+  const [globalStartDate, setGlobalStartDate] = useState("");
+  const [globalEndDate, setGlobalEndDate] = useState("");
+
+  // Filter videos based on global date filter
+  const filteredByDate = (() => {
+    let list = [...videos];
+    if (globalDateFilter === "custom") {
+      if (globalStartDate) {
+        const start = new Date(globalStartDate).getTime();
+        list = list.filter((v) => new Date(v.publishedAt).getTime() >= start);
+      }
+      if (globalEndDate) {
+        const end = new Date(globalEndDate).getTime() + 86400000;
+        list = list.filter((v) => new Date(v.publishedAt).getTime() <= end);
+      }
+    } else if (globalDateFilter !== "all") {
+      const now = Date.now();
+      const cutoffs: Record<string, number> = { week: 7 * 86400000, month: 30 * 86400000, "3months": 90 * 86400000 };
+      const cutoff = now - (cutoffs[globalDateFilter] || 0);
+      list = list.filter((v) => new Date(v.publishedAt).getTime() >= cutoff);
+    }
+    return list;
+  })();
 
   const handleAnalyze = async () => {
     if (!query.trim()) return;
@@ -261,11 +285,21 @@ export default function Home() {
             </div>
           )}
 
-          {showChart && videos.length > 0 && (
-            <PerformanceChart videos={videos} channelName={channel.title} />
+          {showChart && filteredByDate.length > 0 && (
+            <PerformanceChart videos={filteredByDate} channelName={channel.title} />
           )}
 
-          {videos.length > 0 && <VideoTable videos={videos} />}
+          {videos.length > 0 && (
+            <VideoTable
+              videos={videos}
+              dateFilter={globalDateFilter}
+              onDateFilterChange={setGlobalDateFilter}
+              startDate={globalStartDate}
+              onStartDateChange={setGlobalStartDate}
+              endDate={globalEndDate}
+              onEndDateChange={setGlobalEndDate}
+            />
+          )}
         </section>
       )}
 

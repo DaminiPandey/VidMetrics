@@ -17,25 +17,14 @@ import { formatNumber, engagementRate } from "@/lib/utils";
 import { useTheme } from "@/lib/useTheme";
 import type { VideoInfo } from "@/lib/youtube";
 
-type ChartDateFilter = "7d" | "14d" | "30d" | "all";
-
-const CHART_DATE_FILTERS: { value: ChartDateFilter; label: string }[] = [
-  { value: "7d", label: "7D" },
-  { value: "14d", label: "14D" },
-  { value: "30d", label: "30D" },
-  { value: "all", label: "All" },
-];
-
-type TopCount = 5 | 10 | 20;
+type TopCount = 5 | 10;
 
 const TOP_COUNTS: { value: TopCount; label: string }[] = [
   { value: 5, label: "Top 5" },
   { value: 10, label: "Top 10" },
-  { value: 20, label: "Top 20" },
 ];
 
 export default function PerformanceChart({ videos, channelName }: { videos: VideoInfo[]; channelName?: string }) {
-  const [engDateFilter, setEngDateFilter] = useState<ChartDateFilter>("all");
   const [topCount, setTopCount] = useState<TopCount>(10);
   const [logScale, setLogScale] = useState(false);
   const { colors: tc } = useTheme();
@@ -51,24 +40,9 @@ export default function PerformanceChart({ videos, channelName }: { videos: Vide
       }));
   }, [videos, topCount]);
 
-  // Chronological data for engagement trend (filtered)
+  // Chronological data for engagement trend
   const chronological = useMemo(() => {
-    let filtered = [...videos];
-
-    if (engDateFilter !== "all") {
-      const now = Date.now();
-      const cutoffs: Record<string, number> = {
-        "7d": 7 * 86400000,
-        "14d": 14 * 86400000,
-        "30d": 30 * 86400000,
-      };
-      const cutoff = now - cutoffs[engDateFilter];
-      filtered = filtered.filter(
-        (v) => new Date(v.publishedAt).getTime() >= cutoff
-      );
-    }
-
-    return filtered
+    return [...videos]
       .sort(
         (a, b) =>
           new Date(a.publishedAt).getTime() - new Date(b.publishedAt).getTime()
@@ -83,7 +57,7 @@ export default function PerformanceChart({ videos, channelName }: { videos: Vide
           engagementRate(v.viewCount, v.likeCount, v.commentCount).toFixed(2)
         ),
       }));
-  }, [videos, engDateFilter]);
+  }, [videos]);
 
   const tooltipStyle = {
     backgroundColor: tc.tooltipBg,
@@ -107,11 +81,11 @@ export default function PerformanceChart({ videos, channelName }: { videos: Vide
 
   return (
     <>
+    {channelName && (
+      <p className="text-sm text-text-muted mb-4">Insights for <span className="font-semibold text-text-primary">{channelName}</span></p>
+    )}
     {/* Mobile: Stats + Ranked List */}
     <div className="md:hidden space-y-4">
-      {channelName && (
-        <p className="text-sm text-text-muted">Insights for <span className="font-semibold text-text-primary">{channelName}</span></p>
-      )}
       {/* Quick Stats */}
       <div className="grid grid-cols-3 gap-3">
         <div className="rounded-xl border border-border bg-bg-surface p-3 text-center">
@@ -235,21 +209,6 @@ export default function PerformanceChart({ videos, channelName }: { videos: Vide
             <TrendingUp className="h-5 w-5 text-accent" />
             Engagement Over Time
           </h3>
-          <div className="flex gap-1.5">
-            {CHART_DATE_FILTERS.map((f) => (
-              <button
-                key={f.value}
-                onClick={() => setEngDateFilter(f.value)}
-                className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
-                  engDateFilter === f.value
-                    ? "bg-accent text-text-inverse"
-                    : "border border-border text-text-muted hover:border-border-hover hover:text-text-primary"
-                }`}
-              >
-                {f.label}
-              </button>
-            ))}
-          </div>
         </div>
         <div className="h-56 sm:h-72">
           {chronological.length > 0 ? (

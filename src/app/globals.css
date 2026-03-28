@@ -42,7 +42,15 @@
   --color-danger-dim: rgba(239, 68, 68, 0.08);
 }
 
-html,
+html {
+  overflow-x: hidden;
+  color-scheme: dark;
+}
+
+.light {
+  color-scheme: light;
+}
+
 body {
   overflow-x: hidden;
 }
@@ -126,6 +134,15 @@ body {
 .animate-shimmer {
   background-size: 200% auto;
   animation: shimmer 3s linear infinite;
+}
+
+/* Date inputs */
+::-webkit-calendar-picker-indicator {
+  filter: invert(0.7);
+}
+
+.light ::-webkit-calendar-picker-indicator {
+  filter: none;
 }
 
 /* Scrollbar */

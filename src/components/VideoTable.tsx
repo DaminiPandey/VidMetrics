@@ -6,19 +6,37 @@ import { formatNumber, formatDuration, timeAgo, engagementRate } from "@/lib/uti
 import type { VideoInfo } from "@/lib/youtube";
 
 type SortKey = "viewCount" | "likeCount" | "commentCount" | "publishedAt" | "engagement";
-type DateFilter = "all" | "week" | "month" | "3months";
+type DateFilter = "all" | "week" | "month" | "3months" | "custom";
 
 const DATE_FILTERS: { value: DateFilter; label: string }[] = [
   { value: "all", label: "All time" },
   { value: "week", label: "7 days" },
   { value: "month", label: "30 days" },
   { value: "3months", label: "3 months" },
+  { value: "custom", label: "Custom" },
 ];
 
-export default function VideoTable({ videos }: { videos: VideoInfo[] }) {
+interface VideoTableProps {
+  videos: VideoInfo[];
+  dateFilter: string;
+  onDateFilterChange: (f: string) => void;
+  startDate: string;
+  onStartDateChange: (d: string) => void;
+  endDate: string;
+  onEndDateChange: (d: string) => void;
+}
+
+export default function VideoTable({
+  videos,
+  dateFilter,
+  onDateFilterChange,
+  startDate,
+  onStartDateChange,
+  endDate,
+  onEndDateChange,
+}: VideoTableProps) {
   const [sortKey, setSortKey] = useState<SortKey>("viewCount");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
-  const [dateFilter, setDateFilter] = useState<DateFilter>("all");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const perPage = 10;
@@ -31,7 +49,16 @@ export default function VideoTable({ videos }: { videos: VideoInfo[] }) {
       list = list.filter((v) => v.title.toLowerCase().includes(q));
     }
 
-    if (dateFilter !== "all") {
+    if (dateFilter === "custom") {
+      if (startDate) {
+        const start = new Date(startDate).getTime();
+        list = list.filter((v) => new Date(v.publishedAt).getTime() >= start);
+      }
+      if (endDate) {
+        const end = new Date(endDate).getTime() + 86400000;
+        list = list.filter((v) => new Date(v.publishedAt).getTime() <= end);
+      }
+    } else if (dateFilter !== "all") {
       const now = Date.now();
       const cutoffs: Record<string, number> = {
         week: 7 * 86400000,
@@ -58,7 +85,7 @@ export default function VideoTable({ videos }: { videos: VideoInfo[] }) {
     });
 
     return list;
-  }, [videos, sortKey, sortDir, dateFilter, search]);
+  }, [videos, sortKey, sortDir, dateFilter, search, startDate, endDate]);
 
   // Reset page when filters change
   const totalPages = Math.ceil(filtered.length / perPage);
@@ -104,50 +131,32 @@ export default function VideoTable({ videos }: { videos: VideoInfo[] }) {
   return (
     <div>
       {/* Controls */}
-      <div className="mb-5 flex flex-col sm:flex-row flex-wrap items-start sm:items-center gap-3">
-        {/* Search */}
-        <div className="relative w-full sm:w-auto">
-          <svg
-            className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            strokeWidth="2"
-          >
-            <circle cx="11" cy="11" r="8" />
-            <path d="m21 21-4.35-4.35" strokeLinecap="round" />
-          </svg>
-          <input
-            type="text"
-            placeholder="Search videos..."
-            value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            className="w-full sm:w-56 rounded-lg border border-border bg-bg-surface py-2 pl-9 pr-4 text-sm text-text-primary placeholder-text-muted transition-colors focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent-glow"
-          />
-        </div>
-
-        {/* Date Filter Pills */}
-        <div className="flex flex-wrap gap-1.5 sm:gap-2">
-          {DATE_FILTERS.map((f) => (
-            <button
-              key={f.value}
-              onClick={() => { setDateFilter(f.value); setPage(1); }}
-              className={`rounded-full px-3 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm font-medium transition-colors ${
-                dateFilter === f.value
-                  ? "bg-accent text-text-inverse"
-                  : "border border-border text-text-secondary hover:border-border-hover hover:text-text-primary"
-              }`}
+      <div className="mb-5 space-y-3">
+        {/* Row 1: Search + Count + Export */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+          <div className="relative w-full sm:w-auto">
+            <svg
+              className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              strokeWidth="2"
             >
-              {f.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Right side */}
-        <div className="flex sm:ml-auto items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
-          <span className="text-sm text-text-muted">
-            {filtered.length} video{filtered.length !== 1 ? "s" : ""}
-          </span>
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.35-4.35" strokeLinecap="round" />
+            </svg>
+            <input
+              type="text"
+              placeholder="Search videos..."
+              value={search}
+              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+              className="w-full sm:w-56 rounded-lg border border-border bg-bg-surface py-2 pl-9 pr-4 text-sm text-text-primary placeholder-text-muted transition-colors focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent-glow"
+            />
+          </div>
+          <div className="flex sm:ml-auto items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+            <span className="text-sm text-text-muted">
+              {filtered.length} video{filtered.length !== 1 ? "s" : ""}
+            </span>
           <button
             onClick={handleExport}
             className="flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium text-text-secondary transition-colors hover:border-border-hover hover:text-text-primary"
@@ -159,7 +168,44 @@ export default function VideoTable({ videos }: { videos: VideoInfo[] }) {
             </svg>
             Export CSV
           </button>
+          </div>
         </div>
+
+        {/* Row 2: Date Filters */}
+        <div className="flex flex-wrap items-center gap-2">
+          {DATE_FILTERS.map((f) => (
+            <button
+              key={f.value}
+              onClick={() => { onDateFilterChange(f.value); setPage(1); }}
+              className={`rounded-full px-3 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm font-medium transition-colors ${
+                dateFilter === f.value
+                  ? "bg-accent text-text-inverse"
+                  : "border border-border text-text-secondary hover:border-border-hover hover:text-text-primary"
+              }`}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Row 3: Custom Date Range (only when Custom selected) */}
+        {dateFilter === "custom" && (
+          <div className="flex flex-wrap items-center gap-2">
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => { onStartDateChange(e.target.value); setPage(1); }}
+              className="flex-1 sm:flex-none rounded-lg border border-border bg-bg-surface px-3 py-1.5 text-sm text-text-primary transition-colors focus:border-accent focus:outline-none"
+            />
+            <span className="text-xs text-text-muted">to</span>
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => { onEndDateChange(e.target.value); setPage(1); }}
+              className="flex-1 sm:flex-none rounded-lg border border-border bg-bg-surface px-3 py-1.5 text-sm text-text-primary transition-colors focus:border-accent focus:outline-none"
+            />
+          </div>
+        )}
       </div>
 
       {/* Mobile Cards */}
