@@ -401,7 +401,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="mt-auto border-t border-border/50 py-6 text-center text-sm text-text-muted">
-        Built with Next.js, Tailwind CSS & YouTube Data API
+        Made for creators who watch the competition.
       </footer>
     </div>
   );
