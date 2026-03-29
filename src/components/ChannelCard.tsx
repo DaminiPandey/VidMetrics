@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { GitCompareArrows } from "lucide-react";
+import Logo from "@/components/Logo";
 import { formatNumber } from "@/lib/utils";
 import type { ChannelInfo } from "@/lib/youtube";
 
@@ -27,10 +28,8 @@ export default function ChannelCard({
               height={72}
               className="rounded-full"
             />
-            <div className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-yt-red">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="white">
-                <polygon points="10,8 16,12 10,16" />
-              </svg>
+            <div className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-md bg-yt-red">
+              <Logo size={12} />
             </div>
           </div>
 

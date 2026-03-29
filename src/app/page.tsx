@@ -6,6 +6,7 @@ import VideoTable from "@/components/VideoTable";
 import PerformanceChart from "@/components/PerformanceChart";
 import CompareChannels from "@/components/CompareChannels";
 import ThemeToggle from "@/components/ThemeToggle";
+import Logo from "@/components/Logo";
 import type { ChannelInfo, VideoInfo } from "@/lib/youtube";
 
 export default function Home() {
@@ -97,12 +98,8 @@ export default function Home() {
       <header className="relative z-10 border-b border-border/50 bg-bg-base/80 backdrop-blur-md">
         <div className="mx-auto flex max-w-[1200px] items-center justify-between px-4 sm:px-6 py-4">
           <div className="flex items-center gap-2 sm:gap-3">
-            <div className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg bg-yt-red shadow-[0_0_12px_rgba(255,0,0,0.3)]">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                <rect x="3" y="14" width="5" height="7" rx="1" fill="white" />
-                <rect x="10" y="9" width="5" height="12" rx="1" fill="white" />
-                <rect x="17" y="4" width="5" height="17" rx="1" fill="white" />
-              </svg>
+            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-yt-red shadow-[0_0_12px_rgba(255,0,0,0.3)]">
+              <Logo size={16} />
             </div>
             <span className="text-base sm:text-lg font-semibold tracking-tight">
               <span className="text-text-primary">Vid</span>
