@@ -1,11 +1,16 @@
 import { NextRequest } from "next/server";
 
-// Mock the youtube module
-jest.mock("@/lib/youtube", () => ({
-  resolveChannelId: jest.fn(),
-  getChannelInfo: jest.fn(),
-  getChannelVideos: jest.fn(),
-}));
+// Mock the youtube module but keep the real QuotaExceededError
+const { QuotaExceededError: RealQuotaExceededError } = jest.requireActual("@/lib/youtube");
+jest.mock("@/lib/youtube", () => {
+  const actual = jest.requireActual("@/lib/youtube");
+  return {
+    resolveChannelId: jest.fn(),
+    getChannelInfo: jest.fn(),
+    getChannelVideos: jest.fn(),
+    QuotaExceededError: actual.QuotaExceededError,
+  };
+});
 
 import { GET } from "@/app/api/channel/route";
 import { resolveChannelId, getChannelInfo, getChannelVideos } from "@/lib/youtube";
@@ -87,11 +92,20 @@ describe("GET /api/channel", () => {
   });
 
   it("returns 500 on unexpected error", async () => {
-    mockResolveChannelId.mockRejectedValue(new Error("API quota exceeded"));
+    mockResolveChannelId.mockRejectedValue(new Error("Network failure"));
 
     const res = await GET(createRequest("test"));
     expect(res.status).toBe(500);
     const body = await res.json();
     expect(body.error).toContain("Something went wrong");
+  });
+
+  it("returns 429 on quota exceeded", async () => {
+    mockResolveChannelId.mockRejectedValue(new RealQuotaExceededError());
+
+    const res = await GET(createRequest("test"));
+    expect(res.status).toBe(429);
+    const body = await res.json();
+    expect(body.error).toContain("quota exceeded");
   });
 });
