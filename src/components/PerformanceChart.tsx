@@ -194,7 +194,7 @@ export default function PerformanceChart({ videos, channelName }: { videos: Vide
                 labelFormatter={(_: any, payload: readonly any[]) => payload?.[0]?.payload?.fullTitle || _}
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 formatter={(value: any) => [formatNumber(Number(value)), "Views"]}
-                labelStyle={{ color: "#e5e7eb", fontWeight: 600, maxWidth: 300, whiteSpace: "normal" as const }}
+                labelStyle={{ color: tc.tooltipText, fontWeight: 600, maxWidth: 300, whiteSpace: "normal" as const }}
               />
               <Bar dataKey="views" fill={tc.accent} radius={[0, 6, 6, 0]} />
             </BarChart>
